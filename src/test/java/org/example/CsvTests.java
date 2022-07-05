@@ -6,9 +6,11 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -51,6 +53,40 @@ public class CsvTests {
 //                    String title = r.get("title");
 //                    assertThat(AUTHOR_BOOK_MAP.get(author)).isEqualTo(title);
 //                });
+    }
+
+    @Test
+    void read2() throws IOException {
+        Reader in = new FileReader("src/test/resources/book.csv");
+
+        for (CSVRecord record : CSVFormat.DEFAULT.parse(in)) {
+            String columnOne = record.get(0);
+            String columnTwo = record.get(1);
+            System.out.println(columnOne);
+            System.out.println(columnTwo);
+        }
+    }
+
+    enum BookHeaders {
+        author, title
+    }
+
+    @Test
+    void readWithEnum() throws IOException {
+        Reader in = new FileReader("src/test/resources/book.csv");
+        CSVFormat csvFormat = CSVFormat.Builder
+                .create()
+                .setHeader(BookHeaders.class)
+                .setSkipHeaderRecord(true)
+                .build();
+
+        CSVParser records = csvFormat.parse(in);
+        for (CSVRecord record : records.getRecords()) {
+            String author = record.get(BookHeaders.author);
+            String title = record.get(BookHeaders.title);
+            assertThat(AUTHOR_BOOK_MAP.get(author)).isEqualTo(title);
+        }
+
     }
 
     @Test

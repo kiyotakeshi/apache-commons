@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,18 +24,18 @@ public class CommonsIOTests {
     @Test
     void copyAndRead() throws IOException {
         String expected = "hello world from file.txt.";
-        File file = FileUtils.getFile(getClass().getClassLoader().getResource("file.txt").getPath());
+        File file = FileUtils.getFile(Objects.requireNonNull(getClass().getClassLoader().getResource("file.txt")).getPath());
         File tempDir = FileUtils.getTempDirectory();
 
         FileUtils.copyFileToDirectory(file, tempDir);
         File tempFile = FileUtils.getFile(tempDir, file.getName());
-        String data = FileUtils.readFileToString(tempFile, Charset.forName("UTF-8"));
+        String data = FileUtils.readFileToString(tempFile, StandardCharsets.UTF_8);
         assertThat(data).isEqualTo(expected);
     }
 
     @Test
     void filename() {
-        String path = getClass().getClassLoader().getResource("file.txt").getPath();
+        String path = Objects.requireNonNull(getClass().getClassLoader().getResource("file.txt")).getPath();
 
         System.out.println(FilenameUtils.getFullPath(path));
         System.out.println(FilenameUtils.getExtension(path));
@@ -60,7 +61,7 @@ public class CommonsIOTests {
     void filter() {
         final String testFile = "file.txt";
 
-        String path = getClass().getClassLoader().getResource(testFile).getPath();
+        String path = Objects.requireNonNull(getClass().getClassLoader().getResource(testFile)).getPath();
         File dir = FileUtils.getFile(FilenameUtils.getFullPath(path));
 
         String[] names = { "notThisOne", testFile };
@@ -78,7 +79,7 @@ public class CommonsIOTests {
     @Test
     void comparator() {
         var pathFileComparator = new PathFileComparator(IOCase.INSENSITIVE);
-        String path = FilenameUtils.getFullPath(getClass().getClassLoader().getResource("file.txt").getPath());
+        String path = FilenameUtils.getFullPath(Objects.requireNonNull(getClass().getClassLoader().getResource("file.txt")).getPath());
         File dir = new File(path);
         File[] files = dir.listFiles();
 
